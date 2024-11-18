@@ -1,12 +1,163 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  color: white;
+}
 
-/* 
+.player-container {
+  text-align: center;
+  background: #282828;
+  padding: 20px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
 
-    You can write your own styles here...
-    
-    
-    ...Or you can use the import command to include 
-    other sylesheets into your bunde as well, e.j:
-    
-    import 'relative/path/to/stylesheet.scss';
+.song-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex-grow: 1;
+  overflow-y: auto;
+  width: 100vw;
+  max-width: 100%;
+}
 
-*/
+.song-list li {
+  cursor: pointer;
+  padding: 10px;
+  border-bottom: 1px solid #444;
+  color: #bbb;
+  transition: background 0.3s;
+}
+
+.song-list li.active,
+.song-list li:hover {
+  background: #1db954;
+  color: white;
+}
+
+.controls-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 80%;
+  max-width: 500px;
+  margin-top: 20px;
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+}
+
+button {
+  padding: 15px;
+  background: #1db954;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s;
+  font-size: 1.5em;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+button:hover {
+  background: #1a9347;
+}
+
+button.active {
+  background: #1db954;
+  border: 2px solid #fff;
+}
+
+.progress-bar-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: calc(100% - 220px);
+  margin: 0;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 10px;
+  cursor: pointer;
+}
+
+.time-display {
+  font-size: 0.9em;
+  color: #bbb;
+  margin-bottom: 5px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+button i {
+  font-size: 1.2em;
+}
+
+button:active {
+  transform: scale(0.95);
+}
+
+.volume {
+  background: #1db954;
+  border-radius: 5px;
+  font-size: 1.5em;
+  padding: 15px;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.volume:hover {
+  background: #1a9347;
+}
+
+.volume:active {
+  transform: scale(0.95);
+}
+
+.controls-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: nowrap;
+  width: 100%;
+  max-width: 600px;
+}
+
+@media (max-width: 600px) {
+  .controls-container {
+    flex-direction: row;
+    gap: 8px;
+  }
+
+  .song-list {
+    width: 100%;
+  }
+
+  button {
+    padding: 12px;
+    font-size: 1.5em;
+  }
+
+  button i {
+    font-size: 1.2em;
+  }
+}
