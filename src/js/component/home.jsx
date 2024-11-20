@@ -1,25 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 
 const Home = ({
-	songs = [
-		{ title: "Song 1", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
-		{ title: "Song 2", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
-		{ title: "Song 3", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" },
-		{ title: "Song 4", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" },
-		{ title: "Song 5", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3" },
-		{ title: "Song 6", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3" },
-		{ title: "Song 7", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3" },
-		{ title: "Song 8", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" },
-		{ title: "Song 9", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3" },
-		{ title: "Song 10", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3" },
-		{ title: "Song 11", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-11.mp3" },
-		{ title: "Song 12", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-12.mp3" },
-		{ title: "Song 13", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-13.mp3" },
-		{ title: "Song 14", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-14.mp3" },
-		{ title: "Song 15", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-15.mp3" },
-		{ title: "Song 16", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-16.mp3" },
-		{ title: "Song 17", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-17.mp3" },
-	],
 	backgroundColor = "#282828",
 	repeat = false,
 }) => {
@@ -28,7 +9,32 @@ const Home = ({
 	const [isRepeating, setIsRepeating] = useState(repeat);
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [progress, setProgress] = useState(0);
+	const [songs, setSongs] = useState([]);
+	const [error, setError] = useState(null);
 	const [volumeInterval, setVolumeInterval] = useState(null);
+	const baseUrl = "https://playground.4geeks.com";
+
+	useEffect(() => {
+		const fetchSongs = async () => {
+			try {
+				const response = await fetch("https://playground.4geeks.com/sound/songs");
+				if (!response.ok) {
+					throw new Error("Failed to fetch songs");
+				}
+				const data = await response.json();
+				console.log("Songs loaded:", data.songs);
+				setSongs(data.songs.map(song => ({
+					...song,
+					url: `${baseUrl}${song.url}`
+				})));
+			} catch (error) {
+				setError("Error fetching songs: " + error.message);
+				console.error("Error fetching songs:", error);
+			}
+		};
+
+		fetchSongs();
+	}, []);
 
 	useEffect(() => {
 		if (audioRef.current) {
@@ -37,11 +43,16 @@ const Home = ({
 	}, []);
 
 	const playSong = (index) => {
-		setCurrentSongIndex(index);
 		if (audioRef.current) {
+			audioRef.current.pause();
+			audioRef.current.currentTime = 0;
+			setCurrentSongIndex(index);
 			audioRef.current.src = songs[index].url;
-			audioRef.current.play();
-			setIsPlaying(true);
+			audioRef.current.load();
+			audioRef.current.oncanplaythrough = () => {
+				audioRef.current.play();
+				setIsPlaying(true);
+			};
 		}
 	};
 
@@ -141,12 +152,18 @@ const Home = ({
 
 	return (
 		<div className="player-container" style={{ backgroundColor }}>
+			{error && <div className="error-message">{error}</div>}
+
 			<ul className="song-list">
-				{songs.map((song, index) => (
-					<li key={index} onClick={() => playSong(index)} className={index === currentSongIndex ? "active" : ""}>
-						{index + 1}. {song.title}
-					</li>
-				))}
+				{songs.length > 0 ? (
+					songs.map((song, index) => (
+						<li key={song.id} onClick={() => playSong(index)} className={index === currentSongIndex ? "active" : ""}>
+							{index + 1}. {song.name}
+						</li>
+					))
+				) : (
+					<li>No songs available</li>
+				)}
 			</ul>
 
 			<div className="controls-container">
